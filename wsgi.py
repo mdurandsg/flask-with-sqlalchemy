@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 from config import Config
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -11,7 +11,7 @@ ma = Marshmallow(app)
 from models import Product
 from schemas import products_schema, product_schema
 
-@app.route('/hello')
+@app.route('/')
 def hello():
     return "Hello World!"
 
@@ -19,7 +19,7 @@ def hello():
 def products():
     if request.method == 'GET':
         products = db.session.query(Product).all()
-        return products_schema.jsonify(products)
+        return render_template('home.html', products=products)
     else:
         new_product = Product()
         new_product.name = request.json["name"]
@@ -35,7 +35,7 @@ def product_by_id(id):
     if request.method == 'GET':
         product_by_id = db.session.query(Product).get(id)
         #print(product_by_id)
-        return product_schema.jsonify(product_by_id)
+        return render_template('product.html', product=product_by_id)
     elif request.method == 'DELETE':
         product_by_id = db.session.query(Product).get(id)
         db.session.delete(product_by_id)
